@@ -1,0 +1,75 @@
+/* ---- Auth.css – Shared for Login, Signup, AdminLogin ---- */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
+  padding: 40px 16px;
+}
+
+.auth-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 900px;
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Left panel */
+.auth-left {
+  background: linear-gradient(160deg, var(--primary) 0%, var(--accent) 100%);
+  color: var(--white);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-brand {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 28px;
+}
+.auth-brand span { color: #a8c7fa; }
+
+.auth-left h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+.auth-left p { font-size: 0.9rem; opacity: 0.85; line-height: 1.7; margin-bottom: 32px; }
+
+.auth-illustration { display: flex; flex-direction: column; gap: 12px; }
+.auth-service-card {
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(4px);
+}
+.auth-service-card span { font-size: 1.4rem; }
+
+/* Right panel */
+.auth-right { padding: 48px 40px; display: flex; align-items: center; }
+.auth-form-wrapper { width: 100%; }
+
+.auth-title { font-size: 1.6rem; font-weight: 800; color: var(--gray-900); margin-bottom: 6px; }
+.auth-sub { font-size: 0.88rem; color: var(--gray-600); margin-bottom: 28px; }
+
+.auth-footer { margin-top: 24px; font-size: 0.875rem; color: var(--gray-600); text-align: center; }
+.auth-footer a { color: var(--primary); font-weight: 600; }
+.auth-footer a:hover { text-decoration: underline; }
+
+/* Form row (for name + phone side by side) */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@media (max-width: 700px) {
+  .auth-container { grid-template-columns: 1fr; }
+  .auth-left { padding: 32px 24px; }
+  .auth-right { padding: 32px 24px; }
+  .form-row { grid-template-columns: 1fr; }
+}

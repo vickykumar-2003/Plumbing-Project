@@ -1,0 +1,261 @@
+.about-page {
+  padding-top: var(--navbar-height, 70px);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.about-image-container {
+  display: flex;
+  justify-content: center;
+}
+
+.owner-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.owner-photo {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 4/5;
+}
+
+.owner-badge {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.badge-icon {
+  font-size: 2rem;
+}
+
+.badge-text strong {
+  display: block;
+  color: var(--gray-900);
+  font-size: 1.1rem;
+}
+
+.badge-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gray-600);
+}
+
+.about-content .hero-tag {
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.about-content h1 {
+  text-align: left;
+  margin-left: 0;
+  margin-bottom: 1.5rem;
+}
+
+.about-text p {
+  margin-bottom: 1.5rem;
+  color: var(--gray-700);
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+.stats-mini {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-box strong {
+  font-size: 1.8rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.stat-box span {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+}
+
+.value-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  border: 1px solid var(--gray-200);
+}
+
+.value-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  border-color: var(--primary-light);
+}
+
+.value-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.value-card h3 {
+  margin-bottom: 1rem;
+  color: var(--gray-900);
+}
+
+.value-card p {
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+@media (max-width: 991px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    text-align: center;
+  }
+  
+  .about-content h1 {
+    text-align: center;
+  }
+  
+  .stats-mini {
+    justify-content: center;
+  }
+  
+  .about-image-container {
+    order: 2;
+  }
+}
+
+/* Plumbing Vlogs */
+.vlog-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  margin-top: 2rem;
+}
+
+.vlog-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.vlog-card:hover {
+  transform: translateY(-8px);
+}
+
+.vlog-thumbnail {
+  aspect-ratio: 16/9;
+  background: linear-gradient(45deg, var(--primary-light), var(--primary));
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vlog-thumbnail.vlog-2 {
+  background: linear-gradient(45deg, #4f46e5, #3730a3);
+}
+
+.vlog-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.vlog-card:hover .vlog-thumbnail img {
+  transform: scale(1.05);
+}
+
+.play-button {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(5px);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.vlog-card:hover .play-button {
+  background: #fff;
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.vlog-tag {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.vlog-info {
+  padding: 1.5rem;
+}
+
+.vlog-info h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  color: var(--gray-900);
+}
+
+.vlog-info p {
+  color: var(--gray-600);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .vlog-grid {
+    grid-template-columns: 1fr;
+  }
+}

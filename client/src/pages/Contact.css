@@ -1,0 +1,53 @@
+.contact-hero {
+  background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
+  padding: 56px 0 32px;
+  text-align: center;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.contact-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  transition: var(--transition);
+}
+.info-card:hover { background: var(--white); box-shadow: var(--shadow-md); border-color: var(--primary); }
+
+.info-icon {
+  font-size: 1.8rem;
+  width: 54px;
+  height: 54px;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.info-card h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+.info-card p { font-size: 0.88rem; color: var(--gray-600); line-height: 1.5; }
+
+@media (max-width: 992px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+@media (max-width: 576px) {
+  .info-card { flex-direction: column; align-items: center; text-align: center; }
+}

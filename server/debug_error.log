@@ -1,0 +1,7 @@
+Register error at 2026-03-19T18:21:01.083Z: TypeError: next is not a function
+    at model.<anonymous> (V:\Plumbring\server\models\User.js:49:5)
+    at async Kareem.execPre (V:\Plumbring\server\node_modules\kareem\index.js:70:24)
+    at async model.$__save (V:\Plumbring\server\node_modules\mongoose\lib\model.js:394:5)
+    at async model.save (V:\Plumbring\server\node_modules\mongoose\lib\model.js:664:5)
+    at async Function.create (V:\Plumbring\server\node_modules\mongoose\lib\model.js:2751:5)
+    at async V:\Plumbring\server\routes\auth.js:28:18
