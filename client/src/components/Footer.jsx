@@ -33,8 +33,8 @@ const Footer = () => {
           <div className="footer-links">
             <h4>Contact Us</h4>
             <ul>
-              <li>📍 123 Service Lane, Mumbai, IN</li>
-              <li>📞 +91 98765 43210</li>
+              <li>📍 1Rasulpur, Rohtas(Bihar)</li>
+              <li>📞 +91 8210276501</li>
               <li>✉️ support@plumbring.com</li>
               <li>🕐 Mon–Sun: 8am – 8pm</li>
             </ul>
