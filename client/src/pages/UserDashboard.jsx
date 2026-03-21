@@ -26,19 +26,28 @@ const UserDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [bookingsRes, servicesRes] = await Promise.all([
+      const [bookingsRes, servicesRes] = await Promise.allSettled([
         api.get('/bookings/my'),
         api.get('/services')
       ]);
-      setBookings(bookingsRes.data);
-      // Fallback if services API is empty
-      if (servicesRes.data && servicesRes.data.length > 0) {
-        setServices(servicesRes.data);
+
+      if (bookingsRes.status === 'fulfilled') {
+        setBookings(bookingsRes.value.data);
+      } else {
+        setBookings([]);
+      }
+
+      // Fallback if services API is empty or rejected
+      if (servicesRes.status === 'fulfilled' && servicesRes.value.data && servicesRes.value.data.length > 0) {
+        setServices(servicesRes.value.data);
       } else {
         setServices([
           { id: 1, title: 'Pipe Leak Repair', category: 'Plumbing' },
           { id: 2, title: 'Wiring & Panels', category: 'Electrical' },
-          { id: 3, title: 'Drain Cleaning', category: 'Plumbing' }
+          { id: 3, title: 'Drain Cleaning', category: 'Plumbing' },
+          { id: 4, title: 'Fixture Setup', category: 'Electrical' },
+          { id: 5, title: 'Water Heaters', category: 'Plumbing' },
+          { id: 6, title: 'Smart Home', category: 'Electrical' }
         ]);
       }
     } catch (err) {
@@ -175,7 +184,7 @@ const UserDashboard = () => {
           <div style={{ marginTop: '40px', padding: '24px', background: 'var(--primary-light)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
             <h3 style={{ fontSize: '1.05rem', color: 'var(--primary-dark)', marginBottom: '8px' }}>Need Emergency Help?</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--primary-dark)', marginBottom: '16px' }}>Call us directly for 24/7 service.</p>
-            <a href="tel:+919876543210" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>Call +91 98765 43210</a>
+            <a href="tel:+8210276501" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>Call +91 8210276501</a>
           </div>
         </div>
       </div>
