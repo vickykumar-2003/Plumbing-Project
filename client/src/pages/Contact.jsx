@@ -28,7 +28,7 @@ const Contact = () => {
               <div className="info-icon">📍</div>
               <div>
                 <h3>Our Office</h3>
-                <p>Rasulpur,Banjari,Rohtas</p>
+                <p>123 Service Rasulpur, Rohtas, Tiluthu IN</p>
               </div>
             </div>
             <div className="info-card">
@@ -36,14 +36,14 @@ const Contact = () => {
               <div>
                 <h3>Phone Number</h3>
                 <p>+91 8210276501</p>
-                <p>+91 8541910240</p>
+                <p>+91 8434876055</p>
               </div>
             </div>
             <div className="info-card">
               <div className="info-icon">✉️</div>
               <div>
                 <h3>Email Address</h3>
-                <p>sangam@gmailcom</p>
+                <p>sangam@gmail.com.com</p>
                 <p>info@plumbring.com</p>
               </div>
             </div>

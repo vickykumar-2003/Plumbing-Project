@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const { protect, isAdmin } = require('../middleware/auth');
+const sendEmail = require('../utils/sendEmail');
 
 // @route   POST /api/bookings
 // @desc    Create a new booking
@@ -22,6 +23,31 @@ router.post('/', protect, async (req, res) => {
       address,
       message: message || '',
     });
+
+    // Send email notification to Admin
+    try {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        const emailMessage = `
+New Service Booking Received!
+
+Details:
+Name: ${name}
+Phone: ${phone}
+Service Type: ${serviceType}
+Address: ${address}
+Message: ${message || 'N/A'}
+`;
+        
+        await sendEmail({
+          email: adminEmail,
+          subject: 'New Service Booking Alert',
+          message: emailMessage,
+        });
+      }
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError);
+    }
 
     res.status(201).json({ message: 'Booking created successfully', booking });
   } catch (error) {

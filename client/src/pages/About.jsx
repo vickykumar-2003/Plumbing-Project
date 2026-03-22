@@ -1,5 +1,5 @@
 import './About.css';
-import ownerPhoto from '../assets/sangam.png'
+import ownerPhoto from "../assets/sangam.png"
 import vlog1 from '../assets/vlog1.png';
 import vlog2 from '../assets/vlog2.png';
 
