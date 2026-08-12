@@ -24,10 +24,13 @@ router.post('/', protect, async (req, res) => {
       message: message || '',
     });
 
+    const io = require('../socket').getIO();
+    io.to('admin').emit('new-booking', booking);
+
     // Send email notification to Admin using our new emailService
     try {
       const adminEmail = process.env.ADMIN_EMAIL;
-      
+
       if (adminEmail) {
         // Create a nicely formatted HTML email for the admin
         const htmlMessage = `
@@ -64,7 +67,7 @@ router.post('/', protect, async (req, res) => {
             </div>
           </div>
         `;
-        
+
         await sendEmailNotification({
           to: adminEmail,
           subject: '🔔 Alert: New Service Booking Received',
@@ -88,7 +91,9 @@ router.post('/', protect, async (req, res) => {
 // @access  Private (User)
 router.get('/my', protect, async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const bookings = await Booking.find({ userId: req.user.id })
+      .populate('technicianId', 'name phone')
+      .sort({ createdAt: -1 });
     res.json(bookings);
   } catch (error) {
     console.error('Get my bookings error:', error);
@@ -101,7 +106,7 @@ router.get('/my', protect, async (req, res) => {
 // @access  Private (Admin)
 router.get('/', protect, isAdmin, async (req, res) => {
   try {
-    const bookings = await Booking.find().populate('userId', 'name email').sort({ createdAt: -1 });
+    const bookings = await Booking.find().populate('userId', 'name email').populate('technicianId', 'name phone').sort({ createdAt: -1 });
     res.json(bookings);
   } catch (error) {
     console.error('Get all bookings error:', error);
@@ -109,28 +114,109 @@ router.get('/', protect, isAdmin, async (req, res) => {
   }
 });
 
+// @route   GET /api/bookings/technician/my-jobs
+// @desc    Get all pending (new) bookings + bookings assigned to this technician
+// @access  Private (Technician)
+router.get('/technician/my-jobs', protect, async (req, res) => {
+  try {
+    if (req.user.role !== 'technician') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    // Fetch new/unassigned pending bookings AND bookings assigned to this technician
+    const jobs = await Booking.find({
+      $or: [
+        { technicianId: req.user.id },           // already assigned to me
+        { technicianId: null, status: 'Pending' } // new unassigned requests
+      ]
+    })
+      .populate('userId', 'name phone email')
+      .sort({ createdAt: -1 });
+
+    res.json(jobs);
+  } catch (error) {
+    console.error('Get tech jobs error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   PUT /api/bookings/:id/status
+// @desc    Technician updates job status
+// @access  Private (Technician)
+router.put('/:id/status', protect, async (req, res) => {
+  try {
+    if (req.user.role !== 'technician') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const { status } = req.body;
+    const validStatuses = ['Accepted', 'On The Way', 'Arrived', 'Work In Progress', 'Completed'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status update for technician' });
+    }
+
+    const booking = await Booking.findOne({ _id: req.params.id, technicianId: req.user.id });
+    if (!booking) {
+      return res.status(404).json({ message: 'Job not found or not assigned to you' });
+    }
+
+    booking.status = status;
+    if (status === 'Completed') {
+      booking.completedAt = new Date();
+    }
+    await booking.save();
+
+    res.json({ message: 'Job status updated', booking });
+  } catch (error) {
+    console.error('Update job status error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   PUT /api/bookings/:id
-// @desc    Update booking status
+// @desc    Update booking (status & tech assignment)
 // @access  Private (Admin)
 router.put('/:id', protect, isAdmin, async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, technicianId } = req.body;
 
-    if (!['Pending', 'Completed'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value' });
+    const validStatuses = ['Pending', 'Confirmed', 'Assigned', 'Accepted', 'On The Way', 'Arrived', 'Work In Progress', 'Completed', 'Cancelled'];
+
+    let updateFields = {};
+    if (status && validStatuses.includes(status)) {
+      updateFields.status = status;
+      if (status === 'Completed') updateFields.completedAt = new Date();
+    }
+
+    if (technicianId) {
+      updateFields.technicianId = technicianId;
+      updateFields.status = 'Assigned';
+      updateFields.assignedAt = new Date();
     }
 
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { status },
+      updateFields,
       { new: true }
-    );
+    )
+      .populate('userId', 'name email')
+      .populate('technicianId', 'name phone');
 
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    res.json({ message: 'Booking status updated', booking });
+    // Notify user and technician in real-time
+    const io = require('../socket').getIO();
+    const customerRoom = `user_${booking.userId?._id || booking.userId}`;
+    io.to(customerRoom).emit('booking-update', booking);
+    if (booking.technicianId) {
+      io.to(booking.technicianId._id?.toString() || booking.technicianId.toString()).emit('booking-update', booking);
+    }
+    io.to('admin').emit('booking-update', booking);
+
+    res.json({ message: 'Booking updated', booking });
   } catch (error) {
     console.error('Update booking error:', error);
     res.status(500).json({ message: 'Server error' });

@@ -20,6 +20,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminBookings from './pages/AdminBookings';
 import AdminUsers from './pages/AdminUsers';
 import AdminServices from './pages/AdminServices';
+import AdminTechnicians from './pages/AdminTechnicians';
+import TechnicianDashboard from './pages/TechnicianDashboard';
+import Emergency from './pages/Emergency';
 import DashboardLayout from './layouts/DashboardLayout';
 
 function App() {
@@ -41,8 +44,8 @@ function App() {
               <Route path="/admin-login" element={<AdminLogin />} />
 
               {/* Protected User Routes */}
-              <Route 
-                path="/dashboard/*" 
+              <Route
+                path="/dashboard/*"
                 element={
                   <ProtectedRoute>
                     <DashboardLayout>
@@ -50,16 +53,17 @@ function App() {
                         <Route path="" element={<UserDashboard />} />
                         <Route path="bookings" element={<UserBookings />} />
                         <Route path="profile" element={<UserProfile />} />
+                        <Route path="emergency" element={<Emergency />} />
                         <Route path="*" element={<UserDashboard />} />
                       </Routes>
                     </DashboardLayout>
                   </ProtectedRoute>
-                } 
+                }
               />
 
               {/* Protected Admin Routes */}
-              <Route 
-                path="/admin/*" 
+              <Route
+                path="/admin/*"
                 element={
                   <ProtectedRoute adminOnly={true}>
                     <DashboardLayout admin={true}>
@@ -68,11 +72,26 @@ function App() {
                         <Route path="bookings" element={<AdminBookings />} />
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="services" element={<AdminServices />} />
+                        <Route path="technicians" element={<AdminTechnicians />} />
                         <Route path="*" element={<AdminDashboard />} />
                       </Routes>
                     </DashboardLayout>
                   </ProtectedRoute>
-                } 
+                }
+              />
+              {/* Protected Technician Routes */}
+              <Route
+                path="/technician/*"
+                element={
+                  <ProtectedRoute technicianOnly={true}>
+                    <DashboardLayout technician={true}>
+                      <Routes>
+                        <Route path="dashboard" element={<TechnicianDashboard />} />
+                        <Route path="*" element={<TechnicianDashboard />} />
+                      </Routes>
+                    </DashboardLayout>
+                  </ProtectedRoute>
+                }
               />
             </Routes>
           </div>

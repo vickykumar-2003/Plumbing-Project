@@ -19,18 +19,6 @@ const bookingSchema = new mongoose.Schema({
   serviceType: {
     type: String,
     required: true,
-    enum: [
-      'Pipe Repair',
-      'Drain Cleaning',
-      'Water Heater Installation',
-      'Leak Detection',
-      'Bathroom Fitting',
-      'Electrical Wiring',
-      'Switch & Socket Installation',
-      'Fan & Light Fitting',
-      'Circuit Breaker Repair',
-      'Electrical Inspection',
-    ],
   },
   address: {
     type: String,
@@ -44,9 +32,16 @@ const bookingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Completed'],
+    enum: ['Pending', 'Confirmed', 'Assigned', 'Accepted', 'On The Way', 'Arrived', 'Work In Progress', 'Completed', 'Cancelled'],
     default: 'Pending',
   },
+  technicianId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
+  assignedAt: { type: Date },
+  completedAt: { type: Date },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Booking', bookingSchema);

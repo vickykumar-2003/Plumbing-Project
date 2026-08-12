@@ -4,12 +4,28 @@ import './Dashboard.css';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
+  const [technicians, setTechnicians] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
-    fetchBookings();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const [bookRes, techRes] = await Promise.all([
+        api.get('/bookings'),
+        api.get('/technicians')
+      ]);
+      setBookings(bookRes.data);
+      setTechnicians(techRes.data);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -17,19 +33,26 @@ const AdminBookings = () => {
       setBookings(data);
     } catch (err) {
       console.error('Error fetching all bookings:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'Pending' ? 'Completed' : 'Pending';
+  const handleUpdateStatus = async (id, newStatus) => {
     try {
       await api.put(`/bookings/${id}`, { status: newStatus });
-      setMessage({ type: 'success', text: 'Status updated successfully!' });
+      setMessage({ type: 'success', text: `Status updated to ${newStatus}` });
       fetchBookings(); // Refresh
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to update status.' });
+    }
+  };
+
+  const handleAssignTech = async (id, techId) => {
+    try {
+      await api.put(`/bookings/${id}`, { technicianId: techId });
+      setMessage({ type: 'success', text: 'Technician assigned successfully.' });
+      fetchBookings(); // Refresh
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to assign technician.' });
     }
   };
 
@@ -83,7 +106,14 @@ const AdminBookings = () => {
                     <td>
                       <div className="customer-name">{booking.name}</div>
                       <div className="customer-phone">{booking.phone}</div>
-                      <div className="customer-user">By: {booking.userId?.name || 'Guest'}</div>
+                      <div className="customer-user" style={{ fontSize: '11px', color: '#888' }}>
+                        Account: {booking.userId?.name || 'Guest'}
+                      </div>
+                      {booking.technicianId && (
+                        <div style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '4px', fontWeight: 600 }}>
+                          🔧 Tech: {booking.technicianId?.name}
+                        </div>
+                      )}
                     </td>
                     <td>
                       <div className="service-name">{booking.serviceType}</div>
@@ -92,17 +122,37 @@ const AdminBookings = () => {
                     </td>
                     <td>{new Date(booking.createdAt).toLocaleString()}</td>
                     <td>
-                      <span className={`badge badge-${booking.status.toLowerCase()}`}>
-                        {booking.status}
-                      </span>
+                      <select
+                        value={booking.status}
+                        onChange={(e) => handleUpdateStatus(booking._id, e.target.value)}
+                        className={`badge badge-${booking.status.replace(/\s+/g, '-').toLowerCase()}`}
+                        style={{ outline: "none", cursor: 'pointer', padding: '4px', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '8px', display: 'block' }}
+                      >
+                        {['Pending', 'Confirmed', 'Assigned', 'Accepted', 'On The Way', 'Arrived', 'Work In Progress', 'Completed', 'Cancelled'].map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+
+                      <select
+                        value={booking.technicianId?._id || ''}
+                        onChange={(e) => handleAssignTech(booking._id, e.target.value)}
+                        style={{ fontSize: '11px', outline: 'none', padding: '2px', border: '1px solid #ddd', borderRadius: '3px' }}
+                      >
+                        <option value="">Unassigned</option>
+                        {technicians.map(tech => (
+                          <option key={tech._id} value={tech._id}>{tech.name} (Tech)</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="actions-cell">
-                      <button
-                        className={`btn btn-sm ${booking.status === 'Pending' ? 'btn-success' : 'btn-outline'}`}
-                        onClick={() => handleUpdateStatus(booking._id, booking.status)}
-                      >
-                        {booking.status === 'Pending' ? 'Complete' : 'Revert'}
-                      </button>
+                      {booking.status === 'Pending' && (
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() => handleUpdateStatus(booking._id, 'Confirmed')}
+                        >
+                          Confirm
+                        </button>
+                      )}
                       <button
                         className="btn btn-sm btn-danger"
                         onClick={() => handleDelete(booking._id)}

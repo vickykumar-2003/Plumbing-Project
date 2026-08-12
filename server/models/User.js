@@ -20,13 +20,38 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'technician'],
     default: 'user',
   },
   phone: {
     type: String,
     trim: true,
   },
+  // Technician specific fields
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
+  skills: [{
+    type: String,
+  }],
+  rating: {
+    type: Number,
+    default: 5.0,
+  },
+  completedJobs: {
+    type: Number,
+    default: 0,
+  },
+  currentLocation: {
+    lat: { type: Number },
+    lng: { type: Number },
+    updatedAt: { type: Date }
+  },
+  activeJob: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Booking'
+  }
 }, { timestamps: true });
 
 // Hash password before saving

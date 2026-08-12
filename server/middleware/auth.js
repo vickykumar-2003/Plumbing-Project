@@ -27,4 +27,12 @@ const isAdmin = (req, res, next) => {
   return res.status(403).json({ message: 'Access denied. Admins only.' });
 };
 
-module.exports = { protect, isAdmin };
+// Middleware to check if user is technician
+const isTechnician = (req, res, next) => {
+  if (req.user && (req.user.role === 'technician' || req.user.role === 'admin')) {
+    return next();
+  }
+  return res.status(403).json({ message: 'Access denied. Technicians only.' });
+};
+
+module.exports = { protect, isAdmin, isTechnician };

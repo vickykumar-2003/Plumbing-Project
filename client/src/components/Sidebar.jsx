@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
-const Sidebar = ({ admin = false }) => {
+const Sidebar = ({ admin = false, technician = false }) => {
   const { user, logout } = useAuth();
 
   return (
@@ -12,11 +12,11 @@ const Sidebar = ({ admin = false }) => {
           <div className="user-avatar">{user?.name?.charAt(0) || 'U'}</div>
           <div className="user-details">
             <span className="user-name">{user?.name}</span>
-            <span className="user-role">{admin ? 'Administrator' : 'Verified User'}</span>
+            <span className="user-role">{admin ? 'Administrator' : technician ? 'Technician' : 'Verified User'}</span>
           </div>
         </div>
       </div>
-      
+
       <nav className="sidebar-nav">
         <ul>
           {admin ? (
@@ -41,6 +41,19 @@ const Sidebar = ({ admin = false }) => {
                   <span className="icon">🛠️</span> Manage Services
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/admin/technicians" className={({ isActive }) => isActive ? 'active' : ''}>
+                  <span className="icon">👷</span> Tech Fleet
+                </NavLink>
+              </li>
+            </>
+          ) : technician ? (
+            <>
+              <li>
+                <NavLink to="/technician/dashboard" end className={({ isActive }) => isActive ? 'active' : ''}>
+                  <span className="icon">⏱️</span> Tech Dashboard
+                </NavLink>
+              </li>
             </>
           ) : (
             <>
@@ -57,6 +70,11 @@ const Sidebar = ({ admin = false }) => {
               <li>
                 <NavLink to="/dashboard/profile" className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">👤</span> My Profile
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/emergency" className={({ isActive }) => isActive ? 'active' : ''} style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                  <span className="icon">🚨</span> EMERGENCY
                 </NavLink>
               </li>
             </>

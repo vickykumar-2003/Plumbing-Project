@@ -52,6 +52,8 @@ const Navbar = () => {
             <>
               {user.role === 'admin' ? (
                 <li><Link to="/admin/dashboard" className="nav-btn" onClick={closeMenu}>Dashboard</Link></li>
+              ) : user.role === 'technician' ? (
+                <li><Link to="/technician/dashboard" className="nav-btn" onClick={closeMenu}>Technician Portal</Link></li>
               ) : (
                 <li><Link to="/dashboard" className="nav-btn" onClick={closeMenu}>My Bookings</Link></li>
               )}
