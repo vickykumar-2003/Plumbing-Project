@@ -25,10 +25,10 @@ const Home = () => {
     <main className="plumbo-home">
       {/* Top Banner (Optional for Nav matching) */}
       <div className="top-banner">
-        <div className="container" style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+        <div className="container" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px' }}>
           <span>🕒 OPEN 8AM - 5PM (MON - SUN)</span>
           <span>📍 RASULPUR, ROHTAS, BANJARI IN</span>
-          <span className="emergency-contact">📞 24x7 EMERGENCY: +91 8210276501</span>
+          <span className="emergency-contact" style={{ margin: 0 }}>📞 24x7 EMERGENCY: +91 8210276501</span>
         </div>
       </div>
 
@@ -210,8 +210,8 @@ const Home = () => {
 
       {/* LOCATION / FOOTER */}
       <section className="location-section">
-        <div className="container" style={{ display: 'flex', gap: '50px', padding: '60px 0' }}>
-          <div style={{ flex: 1 }}>
+        <div className="container" style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', padding: '60px 0' }}>
+          <div style={{ flex: '1 1 300px' }}>
             <span className="tag">LOCATION</span>
             <h2 style={{ fontSize: '36px', marginBottom: '20px' }}>Find Us</h2>
             <p>Visit us at our conveniently located office, easily accessible from all major routes.</p>
@@ -224,7 +224,7 @@ const Home = () => {
               <p>OPEN : 8AM - 5PM (MON - SUN)</p>
             </div>
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: '1 1 300px' }}>
             {/* Real Google Map Embed */}
             <div className="map-placeholder" style={{ padding: 0, overflow: 'hidden' }}>
               <iframe

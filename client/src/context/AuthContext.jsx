@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
+  const [socketStatus, setSocketStatus] = useState('Disconnected');
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -29,15 +30,41 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const initSocket = (userData) => {
-const newSocket = io(import.meta.env.VITE_API_URL);
+    let backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const socketUrl = backendUrl.replace(/\/api\/?$/, '');
+
+    const newSocket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      auth: { token: localStorage.getItem('token') } // Pass token for backend validation
+    });
 
     newSocket.on('connect', () => {
+      console.log('Socket connected natively to', socketUrl);
+      setSocketStatus('Connected');
       if (userData.role === 'admin') {
         newSocket.emit('join', 'admin');
       } else if (userData.role === 'technician') {
         newSocket.emit('join', userData.id || userData._id);
       } else {
         newSocket.emit('join', `user_${userData.id || userData._id}`);
+      }
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.warn('Socket connection error:', err.message);
+      setSocketStatus('Reconnecting...');
+    });
+
+    newSocket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
+      setSocketStatus('Disconnected');
+      if (reason === 'io server disconnect') {
+        newSocket.connect();
       }
     });
 
@@ -81,11 +108,12 @@ const newSocket = io(import.meta.env.VITE_API_URL);
     if (socket) {
       socket.disconnect();
       setSocket(null);
+      setSocketStatus('Disconnected');
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading, socket }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading, socket, socketStatus }}>
       {children}
     </AuthContext.Provider>
   );

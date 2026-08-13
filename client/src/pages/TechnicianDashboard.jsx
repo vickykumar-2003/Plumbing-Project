@@ -3,11 +3,11 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const TechnicianDashboard = () => {
-    const { user, socket } = useAuth();
+    const { user, socket, socketStatus } = useAuth();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [trackingJobId, setTrackingJobId] = useState(null);
-    const [statusText, setStatusText] = useState('🔴 Disconnected');
+    const [gpsStatus, setGpsStatus] = useState('🔴 GPS Stopped');
 
     // GPS State
     const [coords, setCoords] = useState(null);
@@ -52,14 +52,14 @@ const TechnicianDashboard = () => {
             return;
         }
 
-        setStatusText('🟡 Connecting...');
+        setGpsStatus('🟡 Acquiring GPS...');
         setTrackingJobId(job._id);
 
         watchIdRef.current = navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
                 setCoords({ latitude, longitude });
-                setStatusText('🟢 Live Tracking');
+                setGpsStatus('🟢 GPS Active');
 
                 if (socket) {
                     socket.emit('technician:location:update', {
@@ -74,7 +74,7 @@ const TechnicianDashboard = () => {
             },
             (err) => {
                 console.error("Location error:", err);
-                setStatusText('🔴 Tracking Failed - Check Permissions');
+                setGpsStatus('🔴 Tracking Failed - Check Permissions');
             },
             { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
         );
@@ -87,19 +87,19 @@ const TechnicianDashboard = () => {
         }
         setTrackingJobId(null);
         setCoords(null);
-        setStatusText('🔴 Disconnected');
+        setGpsStatus('🔴 GPS Stopped');
     };
 
     if (loading) return <div className="p-6">Loading...</div>;
 
     return (
-        <div className="p-6" style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>👨‍🔧 Technician Portal</h2>
+        <div style={{ maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', wordWrap: 'break-word' }}>👨‍🔧 Technician Portal</h2>
 
-            <div style={{ background: '#111', color: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: '#111', color: '#fff', padding: '20px', borderRadius: '12px', marginBottom: '30px', display: 'flex', flexWrap: 'wrap', gap: '15px', justifyContent: 'space-between', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
                 <div>
                     <h3 style={{ fontSize: '18px', fontWeight: 'bold' }}>📍 Live Location Status</h3>
-                    <p style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>{statusText}</p>
+                    <p style={{ color: '#aaa', fontSize: '14px', marginTop: '5px' }}>{gpsStatus} | Socket: {socketStatus}</p>
                     {coords && (
                         <p style={{ fontSize: '12px', marginTop: '10px', color: 'var(--primary)' }}>
                             Lat: {coords.latitude.toFixed(6)} | Lng: {coords.longitude.toFixed(6)}
@@ -107,7 +107,7 @@ const TechnicianDashboard = () => {
                     )}
                 </div>
                 {trackingJobId && (
-                    <button onClick={stopTracking} style={{ background: 'var(--danger)', color: '#fff', padding: '10px 20px', borderRadius: '4px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
+                    <button onClick={stopTracking} style={{ background: 'var(--danger)', color: '#fff', padding: '10px 20px', borderRadius: '4px', fontWeight: 'bold', border: 'none', cursor: 'pointer', maxWidth: '100%', width: 'auto' }}>
                         Stop Live Location
                     </button>
                 )}
@@ -118,14 +118,14 @@ const TechnicianDashboard = () => {
             {jobs.length === 0 ? <p>No active jobs assigned to you at the moment.</p> : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     {jobs.map(job => (
-                        <div key={job._id} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '12px', background: trackingJobId === job._id ? '#fff8f5' : '#fff' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                        <div key={job._id} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '12px', background: trackingJobId === job._id ? '#fff8f5' : '#fff', width: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', marginBottom: '10px' }}>
                                 <strong>Booking #{job._id.slice(-6)}</strong>
-                                <span className={`badge badge-${job.status.replace(/\s+/g, '-').toLowerCase()}`}>{job.status}</span>
+                                <span className={`badge badge-${job.status.replace(/\s+/g, '-').toLowerCase()}`} style={{ whiteSpace: 'nowrap' }}>{job.status}</span>
                             </div>
-                            <p style={{ margin: '0', fontSize: '14px' }}><strong>Client:</strong> {job.name} ({job.phone})</p>
-                            <p style={{ margin: '5px 0', fontSize: '14px' }}><strong>Address:</strong> {job.address}</p>
-                            <p style={{ margin: '0', fontSize: '14px' }}><strong>Service:</strong> {job.serviceType}</p>
+                            <p style={{ margin: '0', fontSize: '14px', wordWrap: 'break-word' }}><strong>Client:</strong> {job.name} ({job.phone})</p>
+                            <p style={{ margin: '5px 0', fontSize: '14px', wordWrap: 'break-word' }}><strong>Address:</strong> {job.address}</p>
+                            <p style={{ margin: '0', fontSize: '14px', wordWrap: 'break-word' }}><strong>Service:</strong> {job.serviceType}</p>
 
                             <div style={{ marginTop: '15px' }}>
                                 {trackingJobId === job._id ? (
@@ -134,7 +134,7 @@ const TechnicianDashboard = () => {
                                     <button
                                         onClick={() => startTracking(job)}
                                         disabled={trackingJobId !== null}
-                                        style={{ background: trackingJobId ? '#ccc' : 'var(--primary)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: trackingJobId ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+                                        style={{ background: trackingJobId ? '#ccc' : 'var(--primary)', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '4px', cursor: trackingJobId ? 'not-allowed' : 'pointer', fontWeight: 'bold', maxWidth: '100%', width: 'auto', display: 'inline-block', boxSizing: 'border-box' }}
                                     >
                                         Start Live Location
                                     </button>

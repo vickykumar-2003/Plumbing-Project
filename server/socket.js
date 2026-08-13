@@ -4,8 +4,13 @@ module.exports = {
     init: (httpServer) => {
         io = require('socket.io')(httpServer, {
             cors: {
-                origin: "*", // allow all origins for now
-                methods: ["GET", "POST", "PUT"]
+                origin: [
+                    "https://sangam-plumbing.vercel.app",
+                    "http://localhost:5173",
+                    "http://localhost:3000"
+                ],
+                methods: ["GET", "POST", "PUT"],
+                credentials: true
             }
         });
         return io;

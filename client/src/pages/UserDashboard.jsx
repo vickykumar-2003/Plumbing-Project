@@ -9,7 +9,7 @@ const UserDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: '',
@@ -66,8 +66,8 @@ const UserDashboard = () => {
     try {
       await api.post('/bookings', form);
       setMessage({ type: 'success', text: 'Booking request sent successfully!' });
-      setForm({ ...form, serviceType: '', message: '' }); 
-      fetchData(); 
+      setForm({ ...form, serviceType: '', message: '' });
+      fetchData();
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to submit booking.' });
     } finally {
@@ -81,15 +81,15 @@ const UserDashboard = () => {
   const completedBookings = bookings.filter(b => b.status === 'Completed').length;
 
   return (
-    <div className="dashboard-page overflow-x-hidden">
+    <div className="dashboard-page" style={{ width: '100%', boxSizing: 'border-box' }}>
       <div className="dashboard-header">
         <h1 className="section-title">Welcome, <span className="text-primary">{user?.name}</span></h1>
         <p>Book a new service, track your existing requests, or view your history.</p>
       </div>
 
       {/* Stats Area */}
-      <div className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
-        <div className="card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div className="dashboard-stats-grid">
+        <div className="card stat-card">
           <div style={{ fontSize: '2.5rem', background: 'var(--primary-light)', color: 'var(--primary)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             📅
           </div>
@@ -99,7 +99,7 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        <div className="card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="card stat-card">
           <div style={{ fontSize: '2.5rem', background: '#fff3cd', color: '#856404', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ⏳
           </div>
@@ -109,7 +109,7 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        <div className="card" style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="card stat-card">
           <div style={{ fontSize: '2.5rem', background: '#d1f2eb', color: '#0e6251', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ✅
           </div>
@@ -120,7 +120,7 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      <div className="dashboard-grid" style={{ gridTemplateColumns: '2fr 1fr' }}>
+      <div className="dashboard-content-grid">
         {/* Left: Booking Form */}
         <div className="dashboard-form-card card">
           <div className="card-body">
@@ -140,7 +140,7 @@ const UserDashboard = () => {
                   <input type="tel" id="phone" name="phone" className="form-control" placeholder="+91 98765 43210" value={form.phone} onChange={handleChange} required />
                 </div>
               </div>
-              
+
               <div className="grid-2">
                 <div className="form-group">
                   <label htmlFor="serviceType">Service Type</label>
@@ -167,24 +167,26 @@ const UserDashboard = () => {
         </div>
 
         {/* Right: Quick Actions */}
-        <div className="dashboard-list-card card" style={{ padding: '32px' }}>
-          <h2 className="card-title">Quick Actions</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <Link to="/dashboard/bookings" className="btn btn-outline" style={{ justifyContent: 'center' }}>
-              <span className="icon">🕒</span> View All Bookings
-            </Link>
-            <Link to="/services" className="btn btn-outline" style={{ justifyContent: 'center' }}>
-              <span className="icon">🔍</span> Browse Services
-            </Link>
-            <Link to="/dashboard/profile" className="btn btn-outline" style={{ justifyContent: 'center' }}>
-              <span className="icon">👤</span> Manage Profile
-            </Link>
-          </div>
+        <div className="dashboard-quick-actions card">
+          <div className="card-body">
+            <h2 className="card-title">Quick Actions</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Link to="/dashboard/bookings" className="btn btn-outline" style={{ justifyContent: 'center' }}>
+                <span className="icon">🕒</span> View All Bookings
+              </Link>
+              <Link to="/services" className="btn btn-outline" style={{ justifyContent: 'center' }}>
+                <span className="icon">🔍</span> Browse Services
+              </Link>
+              <Link to="/dashboard/profile" className="btn btn-outline" style={{ justifyContent: 'center' }}>
+                <span className="icon">👤</span> Manage Profile
+              </Link>
+            </div>
 
-          <div style={{ marginTop: '40px', padding: '24px', background: 'var(--primary-light)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', color: 'var(--primary-dark)', marginBottom: '8px' }}>Need Emergency Help?</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--primary-dark)', marginBottom: '16px' }}>Call us directly for 24/7 service.</p>
-            <a href="tel:+8210276501" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>Call +91 8210276501</a>
+            <div style={{ marginTop: '30px', padding: '20px', background: 'var(--primary-light)', borderRadius: 'var(--radius-md)', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
+              <h3 style={{ fontSize: '1.05rem', color: 'var(--primary-dark)', marginBottom: '8px' }}>Need Emergency Help?</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--primary-dark)', marginBottom: '16px' }}>Call us directly for 24/7 service.</p>
+              <a href="tel:+8210276501" className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center', boxSizing: 'border-box' }}>Call +91 8210276501</a>
+            </div>
           </div>
         </div>
       </div>

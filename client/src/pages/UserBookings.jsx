@@ -18,7 +18,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 const UserBookings = () => {
-  const { socket, user } = useAuth();
+  const { socket, socketStatus, user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -141,9 +141,11 @@ const UserBookings = () => {
                             {techLoc && (
                               <div style={{ padding: '15px', background: '#fafafa', borderBottom: '1px solid #eee' }}>
                                 <p style={{ margin: '0 0 5px' }}><strong>Technician:</strong> {booking.technicianId?.name || 'Assigned Technician'}</p>
-                                <p style={{ margin: '0 0 5px' }}><strong>Status:</strong> 🟢 LIVE</p>
+                                <p style={{ margin: '0 0 5px' }}>
+                                  <strong>Status:</strong> {socketStatus === 'Connected' ? '🟢 LIVE (Connected)' : `🔴 ${socketStatus}`}
+                                </p>
                                 {distance && <p style={{ margin: '0 0 5px' }}><strong>Distance:</strong> {distance} km away</p>}
-                                <p style={{ margin: '0', fontSize: '12px', color: '#666' }}><strong>Last Updated:</strong> Just now</p>
+                                <p style={{ margin: '0', fontSize: '12px', color: '#666' }}><strong>Last Updated:</strong> {new Date(techLoc.updatedAt).toLocaleTimeString()}</p>
                               </div>
                             )}
 

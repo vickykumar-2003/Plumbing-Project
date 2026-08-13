@@ -38,14 +38,38 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require('./socket').init(server);
 
-// Setup basic socket logic
+const jwt = require('jsonwebtoken');
+
+// Setup JWT Auth middleware for Socket
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (!token) {
+    return next(new Error('Authentication error: Token missing'));
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return next(new Error('Authentication error: Invalid token'));
+    socket.user = decoded; // { id, name, email, role }
+    next();
+  });
+});
+
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  console.log('Client connected authenticated:', socket.id, socket.user.email);
 
   // Clients can join their own user room (e.g. user ID or 'admin')
   socket.on('join', (room) => {
-    socket.join(room);
-    console.log(`Socket ${socket.id} joined room ${room}`);
+    // Validate that the socket is allowed to join this room
+    if (socket.user.role === 'admin' && room === 'admin') {
+      socket.join('admin');
+      console.log(`Admin ${socket.user.email} joined admin room.`);
+    } else if (socket.user.role === 'technician' && room === socket.user.id) {
+      socket.join(`technician_${socket.user.id}`);
+    } else if (socket.user.role === 'user' && room === `user_${socket.user.id}`) {
+      socket.join(`user_${socket.user.id}`);
+      console.log(`User ${socket.user.id} joined their room.`);
+    } else {
+      console.warn(`Unauthorized room join attempt by ${socket.user.email} for room ${room}`);
+    }
   });
 
   socket.on('technician:location:update', async (data) => {
@@ -57,6 +81,25 @@ io.on('connection', (socket) => {
       const User = require('./models/User');
 
       // Validate that the technician owns/is assigned to the booking
+      // And validate that the technician sending the event is the authenticated user
+      if (socket.user.role !== 'technician' && socket.user.role !== 'admin') {
+        console.warn(`Unauthorized location update from non-technician ${socket.user.email}`);
+        return;
+      }
+
+      if (socket.user.role === 'technician' && data.technicianId !== socket.user.id) {
+        console.warn(`Technician ${socket.user.id} tried to update location for ${data.technicianId}`);
+        return;
+      }
+
+      // Validate latitude and longitude
+      if (typeof data.latitude !== 'number' || typeof data.longitude !== 'number' ||
+        data.latitude < -90 || data.latitude > 90 ||
+        data.longitude < -180 || data.longitude > 180) {
+        console.warn(`Invalid coordinates received from ${socket.user.email}`);
+        return;
+      }
+
       const validBooking = await Booking.findOne({ _id: data.bookingId, technicianId: data.technicianId });
 
       if (!validBooking) {

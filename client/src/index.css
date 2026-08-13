@@ -41,7 +41,13 @@
   padding: 0;
 }
 
-html {
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   scroll-behavior: smooth;
 }
 
@@ -114,6 +120,7 @@ ul {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 22px;
   border-radius: var(--radius-sm);
@@ -123,6 +130,8 @@ ul {
   border: none;
   transition: var(--transition);
   outline: none;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .btn-primary {
@@ -215,6 +224,7 @@ ul {
 
 .form-control {
   width: 100%;
+  max-width: 100%;
   padding: 10px 14px;
   border: 1.5px solid var(--gray-200);
   border-radius: var(--radius-sm);
@@ -224,6 +234,7 @@ ul {
   background: var(--white);
   transition: var(--transition);
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-control:focus {

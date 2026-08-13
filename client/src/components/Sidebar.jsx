@@ -2,11 +2,11 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
-const Sidebar = ({ admin = false, technician = false }) => {
+const Sidebar = ({ admin = false, technician = false, isOpen, onClose }) => {
   const { user, logout } = useAuth();
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
         <div className="user-info">
           <div className="user-avatar">{user?.name?.charAt(0) || 'U'}</div>
@@ -15,6 +15,7 @@ const Sidebar = ({ admin = false, technician = false }) => {
             <span className="user-role">{admin ? 'Administrator' : technician ? 'Technician' : 'Verified User'}</span>
           </div>
         </div>
+        <button className="close-sidebar-btn" onClick={onClose}>&times;</button>
       </div>
 
       <nav className="sidebar-nav">
@@ -22,27 +23,27 @@ const Sidebar = ({ admin = false, technician = false }) => {
           {admin ? (
             <>
               <li>
-                <NavLink to="/admin/dashboard" end className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/dashboard" end onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">📊</span> Dashboard
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/bookings" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/bookings" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">📅</span> All Bookings
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/users" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">👥</span> Users
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/services" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/services" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">🛠️</span> Manage Services
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/technicians" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/technicians" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">👷</span> Tech Fleet
                 </NavLink>
               </li>
@@ -50,7 +51,7 @@ const Sidebar = ({ admin = false, technician = false }) => {
           ) : technician ? (
             <>
               <li>
-                <NavLink to="/technician/dashboard" end className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/technician/dashboard" end onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">⏱️</span> Tech Dashboard
                 </NavLink>
               </li>
@@ -58,22 +59,22 @@ const Sidebar = ({ admin = false, technician = false }) => {
           ) : (
             <>
               <li>
-                <NavLink to="/dashboard" end className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/dashboard" end onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">🏠</span> My Dashboard
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/bookings" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/dashboard/bookings" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">🕒</span> My Bookings
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/profile" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/dashboard/profile" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''}>
                   <span className="icon">👤</span> My Profile
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/emergency" className={({ isActive }) => isActive ? 'active' : ''} style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                <NavLink to="/dashboard/emergency" onClick={onClose} className={({ isActive }) => isActive ? 'active' : ''} style={{ color: '#d32f2f', fontWeight: 'bold' }}>
                   <span className="icon">🚨</span> EMERGENCY
                 </NavLink>
               </li>

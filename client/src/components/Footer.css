@@ -11,12 +11,16 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 40px;
   margin-bottom: 40px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-logo {
   font-size: 2rem;
   font-weight: 900;
   color: #fff;
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 .footer-logo span {
@@ -28,7 +32,9 @@
   background: #fff;
   border-radius: 4px;
   overflow: hidden;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
 }
 
 .news-input input {
@@ -47,6 +53,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
   margin-bottom: 60px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-links h4 {
@@ -65,21 +73,28 @@
   margin-bottom: 15px;
   font-size: 13px;
   color: #999;
+  word-break: break-word;
 }
 
 .footer-links li:hover {
   color: #fff;
 }
 
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
 .socials span {
   font-size: 20px;
-  margin-right: 15px;
   opacity: 0.8;
   cursor: pointer;
 }
 
 .payments {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -101,6 +116,12 @@
   color: #777;
 }
 
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .footer-top-row {
     flex-direction: column;
@@ -110,15 +131,23 @@
 
   .news-input {
     width: 100%;
+    max-width: 100%;
   }
 
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
 
   .footer-bottom {
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-logo {
+    font-size: 1.5rem;
   }
 }

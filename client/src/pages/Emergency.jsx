@@ -40,7 +40,7 @@ const Emergency = () => {
     };
 
     return (
-        <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', background: '#ffebee', borderRadius: '8px', border: '2px solid #ef5350' }}>
+        <div style={{ maxWidth: '600px', width: '100%', margin: '40px auto', padding: '20px', background: '#ffebee', borderRadius: '8px', border: '2px solid #ef5350', boxSizing: 'border-box' }}>
             <h2 style={{ color: '#c62828', textAlign: 'center', fontWeight: 'bold' }}>🚨 EMERGENCY SERVICE REQUEST</h2>
             <p style={{ textAlign: 'center', marginBottom: '20px', color: '#b71c1c' }}>
                 For urgent issues requiring immediate response. Our fastest technician will be dispatched!
@@ -54,7 +54,7 @@ const Emergency = () => {
                     <select
                         value={formData.emergencyType}
                         onChange={e => setFormData({ ...formData, emergencyType: e.target.value })}
-                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     >
                         {emergencyTypes.map(type => (
                             <option key={type} value={type}>{type}</option>
@@ -70,7 +70,7 @@ const Emergency = () => {
                         placeholder="Describe the issue urgently..."
                         value={formData.description}
                         onChange={e => setFormData({ ...formData, description: e.target.value })}
-                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     ></textarea>
                 </div>
 
@@ -82,7 +82,7 @@ const Emergency = () => {
                         placeholder="Enter exact address"
                         value={formData.address}
                         onChange={e => setFormData({ ...formData, address: e.target.value })}
-                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     />
                 </div>
 
@@ -94,7 +94,7 @@ const Emergency = () => {
                         placeholder="Mobile number for tech to call"
                         value={formData.contactPhone}
                         onChange={e => setFormData({ ...formData, contactPhone: e.target.value })}
-                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     />
                 </div>
 
