@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -7,9 +7,23 @@ import './Auth.css';
 const Signup = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '', captchaAnswer: '' });
+  const [captchaData, setCaptchaData] = useState({ id: null, image: null });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const fetchCaptcha = async () => {
+    try {
+      const { data } = await api.get('/auth/security-check');
+      setCaptchaData({ id: data.captchaId, image: data.image });
+    } catch (e) {
+      console.error("Failed to load CAPTCHA", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -29,11 +43,15 @@ const Signup = () => {
         email: form.email,
         phone: form.phone,
         password: form.password,
+        captchaId: captchaData.id,
+        captchaAnswer: form.captchaAnswer
       });
       login(data.user, data.token);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setForm(prev => ({ ...prev, captchaAnswer: '' }));
+      fetchCaptcha();
     } finally {
       setLoading(false);
     }
@@ -127,6 +145,32 @@ const Signup = () => {
                   />
                 </div>
               </div>
+
+              <div className="form-group">
+                <label htmlFor="captchaAnswer">Security Check</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+                  {captchaData.image ? (
+                    <img src={captchaData.image} alt="CAPTCHA Challenge" style={{ border: '1px solid #ccc', borderRadius: '4px', maxWidth: '100%', height: '50px' }} />
+                  ) : (
+                    <div style={{ height: '50px', width: '160px', background: '#f1f1f1', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: '#666' }}>Loading...</div>
+                  )}
+                  <button type="button" onClick={fetchCaptcha} style={{ background: 'none', border: '1px solid #ddd', padding: '8px', borderRadius: '4px', cursor: 'pointer', fontSize: '18px' }} aria-label="Refresh CAPTCHA" title="Refresh CAPTCHA">
+                    ↻
+                  </button>
+                </div>
+                <input
+                  id="captchaAnswer"
+                  type="text"
+                  name="captchaAnswer"
+                  className="form-control"
+                  placeholder="Enter characters above"
+                  value={form.captchaAnswer}
+                  onChange={handleChange}
+                  autoComplete="off"
+                  required
+                />
+              </div>
+
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>

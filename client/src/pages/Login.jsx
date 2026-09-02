@@ -14,7 +14,7 @@ const Login = () => {
 
   const fetchCaptcha = async () => {
     try {
-      const { data } = await api.get('/auth/captcha');
+      const { data } = await api.get('/auth/security-check');
       setCaptchaData({ id: data.captchaId, image: data.image });
     } catch (e) {
       console.error("Failed to load CAPTCHA", e);

@@ -51,10 +51,10 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
-// @route   GET /api/auth/captcha
+// @route   GET /api/auth/security-check
 // @desc    Get CAPTCHA challenge
 // @access  Public
-router.get('/captcha', (req, res) => {
+router.get('/security-check', (req, res) => {
   const text = generateCaptchaText();
   const svg = generateCaptchaSVG(text);
   const captchaId = crypto.randomBytes(16).toString('hex');
