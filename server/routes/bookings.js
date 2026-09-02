@@ -29,7 +29,8 @@ router.post('/', protect, async (req, res) => {
 
     // Send email notification to Admin using our new emailService
     try {
-      const adminEmail = process.env.ADMIN_EMAIL;
+      // We route the admin email to your actual EMAIL_USER so you can receive it while testing
+      const adminEmail = process.env.EMAIL_USER;
 
       if (adminEmail) {
         // Create a nicely formatted HTML email for the admin
@@ -73,10 +74,30 @@ router.post('/', protect, async (req, res) => {
           subject: '🔔 Alert: New Service Booking Received',
           html: htmlMessage,
         }).catch(emailError => {
-          console.error('Failed to send admin notification email:', emailError);
+          require('fs').appendFileSync('email_debug.log', 'Background email fail: ' + emailError + '\n');
         });
       }
+
+      // Send confirmation to the Customer (User)
+      if (req.user && req.user.email) {
+        sendEmailNotification({
+          to: req.user.email,
+          subject: '✅ Service Request Confirmed - Sangam Plumbing',
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+              <h2>Booking Confirmed!</h2>
+              <p>Hello ${name},</p>
+              <p>We have successfully received your service request for <b>${serviceType}</b>.</p>
+              <p>Our team will review it and assign a technician shortly. You can track your booking status on your dashboard.</p>
+              <br/>
+              <p>Thank you,<br/>Sangam Plumbing Team</p>
+            </div>
+          `
+        }).catch(e => console.error('Customer email failed:', e));
+      }
+
     } catch (emailError) {
+      require('fs').appendFileSync('email_debug.log', 'Sync email error: ' + emailError + '\n');
       console.error('Email configuration error:', emailError);
       // We catch the error so the booking process doesn't fail if the email fails
     }

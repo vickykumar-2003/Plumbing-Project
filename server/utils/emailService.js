@@ -26,10 +26,10 @@ const sendEmailNotification = async (options) => {
 
     // 3. Send the email
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email notification sent successfully: %s', info.messageId);
+    require('fs').appendFileSync('email_debug.log', 'Email sent successfully: ' + info.messageId + '\n');
     return true;
   } catch (error) {
-    console.error('❌ Error sending email notification:', error.message);
+    require('fs').appendFileSync('email_debug.log', 'Error sending email: ' + error.message + '\n');
     return false; // Return false so the app doesn't crash
   }
 };
