@@ -1,11 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dns = require("dns");
+// DNS configuration removed to prevent DNS resolution issues in production
 
-dns.setServers([
-  "1.1.1.1",
-  "8.8.8.8"
-]);
 
 const cors = require('cors');
 const dotenv = require('dotenv');

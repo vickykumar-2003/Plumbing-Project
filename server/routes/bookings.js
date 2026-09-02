@@ -68,14 +68,16 @@ router.post('/', protect, async (req, res) => {
           </div>
         `;
 
-        await sendEmailNotification({
+        sendEmailNotification({
           to: adminEmail,
           subject: '🔔 Alert: New Service Booking Received',
           html: htmlMessage,
+        }).catch(emailError => {
+          console.error('Failed to send admin notification email:', emailError);
         });
       }
     } catch (emailError) {
-      console.error('Failed to send admin notification email:', emailError);
+      console.error('Email configuration error:', emailError);
       // We catch the error so the booking process doesn't fail if the email fails
     }
 
