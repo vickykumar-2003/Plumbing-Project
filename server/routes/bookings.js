@@ -185,12 +185,35 @@ router.put('/:id/status', protect, async (req, res) => {
     }
 
     booking.status = status;
+
     if (status === 'Completed') {
       booking.completedAt = new Date();
     }
+
     await booking.save();
 
-    res.json({ message: 'Job status updated', booking });
+    // Real-time update
+    const io = require('../socket').getIO();
+
+    io.to(`user_${booking.userId}`).emit(
+      'booking-update',
+      booking
+    );
+
+    io.to('admin').emit(
+      'booking-update',
+      booking
+    );
+
+    io.to(`technician_${booking.technicianId}`).emit(
+      'booking-update',
+      booking
+    );
+
+    res.json({
+      message: 'Job status updated',
+      booking
+    });
   } catch (error) {
     console.error('Update job status error:', error);
     res.status(500).json({ message: 'Server error' });
