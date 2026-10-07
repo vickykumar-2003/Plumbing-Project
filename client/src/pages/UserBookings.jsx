@@ -49,7 +49,7 @@ const UserBookings = () => {
   // Review states
   const [showReview, setShowReview] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
   // =====================================================
@@ -146,58 +146,59 @@ const UserBookings = () => {
   // SUBMIT REVIEW
   // =====================================================
 
+
   const submitReview = async () => {
-    try {
-      if (!selectedBooking) {
-        return;
-      }
-
-      // Feedback validation
-      if (!comment.trim()) {
-        alert("Please write your feedback");
-        return;
-      }
-
-      // Rating validation
-      if (rating < 1 || rating > 5) {
-        alert("Please select a rating between 1 and 5");
-        return;
-      }
-
-      const { data } = await api.post("/reviews", {
-        bookingId: selectedBooking._id,
-        rating: Number(rating),
-        comment: comment.trim()
-      });
-
-      alert(
-        data.message ||
-        "Review submitted successfully!"
-      );
-
-      // Close modal
-      setShowReview(false);
-      setSelectedBooking(null);
-
-      // Reset review form
-      setRating(5);
-      setComment("");
-
-      // Refresh bookings
-      fetchBookings();
-
-    } catch (error) {
-      console.error(
-        "Review submission error:",
-        error
-      );
-
-      alert(
-        error.response?.data?.message ||
-        "Failed to submit review"
-      );
+  try {
+    if (!selectedBooking) {
+      alert("Booking not selected");
+      return;
     }
-  };
+
+    const bookingId =
+      selectedBooking._id ||
+      selectedBooking.id ||
+      selectedBooking.bookingId;
+
+    if (!bookingId) {
+      console.log("Selected Booking:", selectedBooking);
+      alert("Booking ID not found");
+      return;
+    }
+
+    if (rating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+
+    if (!comment.trim()) {
+      alert("Please write your feedback");
+      return;
+    }
+
+    const { data } = await api.post("/reviews", {
+      bookingId: bookingId,
+      rating: Number(rating),
+      comment: comment.trim(),
+    });
+
+    alert(data.message || "Review submitted successfully!");
+
+    setShowReview(false);
+    setSelectedBooking(null);
+    setRating(0);
+    setComment("");
+
+    fetchBookings();
+
+  } catch (error) {
+    console.error("Review submission error:", error);
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to submit review"
+    );
+  }
+};
 
   // =====================================================
   // LOADING
@@ -422,7 +423,7 @@ const UserBookings = () => {
                                   booking
                                 );
 
-                                setRating(5);
+                                setRating(0);
                                 setComment("");
                                 setShowReview(true);
                               }}
@@ -707,54 +708,42 @@ const UserBookings = () => {
 
             {/* STAR RATING */}
 
-            <div
-              style={{
-                margin: "15px 0"
-              }}
-            >
+            {/* ⭐ STAR RATING */}
 
-              <p
-                style={{
-                  marginBottom: "5px",
-                  fontWeight: "600"
-                }}
-              >
-                Your Rating
-              </p>
+<div style={{ margin: "15px 0" }}>
 
-              {[1, 2, 3, 4, 5].map((star) => (
+  {[1, 2, 3, 4, 5].map((star) => (
+    <button
+      key={star}
+      type="button"
+      onClick={() => setRating(star)}
+      style={{
+        background: "none",
+        border: "none",
+        padding: "0 4px",
+        fontSize: "32px",
+        cursor: "pointer",
+        color: star <= rating ? "#f59e0b" : "#222",
+        transition: "0.2s",
+      }}
+    >
+      ★
+    </button>
+  ))}
 
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() =>
-                    setRating(star)
-                  }
-                  style={{
-                    background: "none",
-                    border: "none",
-                    fontSize: "30px",
-                    cursor: "pointer",
-                    padding: "2px"
-                  }}
-                >
-                  {star <= rating
-                    ? "⭐"
-                    : "☆"}
-                </button>
+  <div
+    style={{
+      marginTop: "5px",
+      fontWeight: "600",
+      color: "#555",
+    }}
+  >
+    {rating === 0
+      ? "Select your rating"
+      : `${rating}/5`}
+  </div>
 
-              ))}
-
-              <p
-                style={{
-                  marginTop: "5px",
-                  fontWeight: "600"
-                }}
-              >
-                {rating}/5
-              </p>
-
-            </div>
+</div>
 
 
             {/* FEEDBACK */}
