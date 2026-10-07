@@ -23,9 +23,9 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   const c =
     2 * Math.atan2(
@@ -147,60 +147,63 @@ const UserBookings = () => {
   // =====================================================
 
 
-const submitReview = async () => {
-  try {
-    if (!selectedBooking) {
-      alert("Booking not selected");
-      return;
+  const submitReview = async () => {
+    try {
+      if (!selectedBooking) {
+        alert("Booking not selected");
+        return;
+      }
+
+      // Get booking ID safely
+      const bookingId =
+        selectedBooking._id ||
+        selectedBooking.id ||
+        selectedBooking.bookingId;
+
+      console.log("SELECTED BOOKING:", selectedBooking);
+      console.log("BOOKING ID:", bookingId);
+      console.log("RATING:", rating);
+      console.log("COMMENT:", comment);
+
+      if (!bookingId) {
+        alert("Booking ID not found");
+        return;
+      }
+
+      if (!rating || rating < 1 || rating > 5) {
+        alert("Please select a rating");
+        return;
+      }
+
+      if (!comment.trim()) {
+        alert("Please write your feedback");
+        return;
+      }
+
+      const { data } = await api.post("/reviews", {
+        bookingId: bookingId,
+        rating: Number(rating),
+        comment: comment.trim(),
+      });
+
+      alert(data.message || "Review submitted successfully!");
+
+      setShowReview(false);
+      setSelectedBooking(null);
+      setRating(0);
+      setComment("");
+
+      fetchBookings();
+
+    } catch (error) {
+      console.error("REVIEW ERROR:", error);
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to submit review"
+      );
     }
-
-    const bookingId =
-      selectedBooking._id ||
-      selectedBooking.id ||
-      selectedBooking.bookingId;
-
-    console.log("Selected Booking:", selectedBooking);
-    console.log("Booking ID:", bookingId);
-
-    if (!bookingId) {
-      alert("Booking ID not found");
-      return;
-    }
-
-    if (!rating || rating < 1 || rating > 5) {
-      alert("Please select a rating");
-      return;
-    }
-
-    if (!comment.trim()) {
-      alert("Please write your feedback");
-      return;
-    }
-
-    const response = await api.post("/reviews", {
-      bookingId: bookingId,
-      rating: Number(rating),
-      comment: comment.trim(),
-    });
-
-    alert(response.data.message || "Review submitted successfully!");
-
-    setShowReview(false);
-    setSelectedBooking(null);
-    setRating(0);
-    setComment("");
-
-    fetchBookings();
-
-  } catch (error) {
-    console.error("Review Error:", error);
-
-    alert(
-      error.response?.data?.message ||
-      "Failed to submit review"
-    );
-  }
-};
+  };
 
   // =====================================================
   // LOADING
@@ -550,7 +553,7 @@ const submitReview = async () => {
                                     Status:
                                   </strong>{" "}
                                   {socketStatus ===
-                                  'Connected'
+                                    'Connected'
                                     ? '🟢 LIVE (Connected)'
                                     : `🔴 ${socketStatus}`}
                                 </p>
@@ -712,40 +715,40 @@ const submitReview = async () => {
 
             {/* ⭐ STAR RATING */}
 
-<div style={{ margin: "15px 0" }}>
+            <div style={{ margin: "15px 0" }}>
 
-  {[1, 2, 3, 4, 5].map((star) => (
-    <button
-      key={star}
-      type="button"
-      onClick={() => setRating(star)}
-      style={{
-        background: "none",
-        border: "none",
-        padding: "0 4px",
-        fontSize: "32px",
-        cursor: "pointer",
-        color: star <= rating ? "#f59e0b" : "#222",
-        transition: "0.2s",
-      }}
-    >
-      ★
-    </button>
-  ))}
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: "0 4px",
+                    fontSize: "32px",
+                    cursor: "pointer",
+                    color: star <= rating ? "#f59e0b" : "#222",
+                    transition: "0.2s",
+                  }}
+                >
+                  ★
+                </button>
+              ))}
 
-  <div
-    style={{
-      marginTop: "5px",
-      fontWeight: "600",
-      color: "#555",
-    }}
-  >
-    {rating === 0
-      ? "Select your rating"
-      : `${rating}/5`}
-  </div>
+              <div
+                style={{
+                  marginTop: "5px",
+                  fontWeight: "600",
+                  color: "#555",
+                }}
+              >
+                {rating === 0
+                  ? "Select your rating"
+                  : `${rating}/5`}
+              </div>
 
-</div>
+            </div>
 
 
             {/* FEEDBACK */}
