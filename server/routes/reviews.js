@@ -119,4 +119,23 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
+
+router.get("/technician/:technicianId", async (req, res) => {
+  try {
+    const reviews = await Review.find({
+      technicianId: req.params.technicianId
+    })
+      .populate("userId", "name")
+      .sort({ createdAt: -1 });
+
+    res.json(reviews);
+
+  } catch (error) {
+    console.error("Get Reviews Error:", error);
+
+    res.status(500).json({
+      message: "Server error while fetching reviews"
+    });
+  }
+});
 module.exports = router;
