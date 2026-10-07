@@ -147,7 +147,7 @@ const UserBookings = () => {
   // =====================================================
 
 
-  const submitReview = async () => {
+const submitReview = async () => {
   try {
     if (!selectedBooking) {
       alert("Booking not selected");
@@ -159,13 +159,15 @@ const UserBookings = () => {
       selectedBooking.id ||
       selectedBooking.bookingId;
 
+    console.log("Selected Booking:", selectedBooking);
+    console.log("Booking ID:", bookingId);
+
     if (!bookingId) {
-      console.log("Selected Booking:", selectedBooking);
       alert("Booking ID not found");
       return;
     }
 
-    if (rating === 0) {
+    if (!rating || rating < 1 || rating > 5) {
       alert("Please select a rating");
       return;
     }
@@ -175,13 +177,13 @@ const UserBookings = () => {
       return;
     }
 
-    const { data } = await api.post("/reviews", {
+    const response = await api.post("/reviews", {
       bookingId: bookingId,
       rating: Number(rating),
       comment: comment.trim(),
     });
 
-    alert(data.message || "Review submitted successfully!");
+    alert(response.data.message || "Review submitted successfully!");
 
     setShowReview(false);
     setSelectedBooking(null);
@@ -191,7 +193,7 @@ const UserBookings = () => {
     fetchBookings();
 
   } catch (error) {
-    console.error("Review submission error:", error);
+    console.error("Review Error:", error);
 
     alert(
       error.response?.data?.message ||
